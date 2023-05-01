@@ -29,7 +29,7 @@ func init() {
 }
 
 func DisablePrint() {
-	loaderCtx.Set(common.ConfigDisableLog, "yes")
+	loaderCtx.Set(common.ConfigDisablePrint, "yes")
 }
 
 func DisableSort() {
@@ -84,7 +84,7 @@ func Load(ctx context.Context, list model.LoaderList) {
 			list = sortedList
 		}
 
-		if !loaderCtx.IsDisableLog() {
+		if !loaderCtx.IsDisablePrint() {
 			log.Printf("[Bootloader] 预计加载模块：\n")
 			for i, loader := range list {
 				log.Printf("[Bootloader] Module(%v/%v): %v\n",
@@ -94,7 +94,7 @@ func Load(ctx context.Context, list model.LoaderList) {
 			}
 		}
 
-		if !loaderCtx.IsDisableLog() {
+		if !loaderCtx.IsDisablePrint() {
 			log.Printf("[Bootloader] start (total: %v)...\n", len(list))
 		}
 
@@ -106,7 +106,7 @@ func Load(ctx context.Context, list model.LoaderList) {
 				panic(panicInfo)
 			}
 
-			if !loaderCtx.IsDisableLog() {
+			if !loaderCtx.IsDisablePrint() {
 				log.Printf("[Bootloader] successfully loaded(%v/%v, time: %vms): %v\n",
 					i+1,
 					len(list),
@@ -115,7 +115,7 @@ func Load(ctx context.Context, list model.LoaderList) {
 			}
 		}
 
-		if !loaderCtx.IsDisableLog() {
+		if !loaderCtx.IsDisablePrint() {
 			log.Printf("[Bootloader] load finished (total: %v), time: %vms\n",
 				len(list),
 				time.Since(t).Milliseconds())

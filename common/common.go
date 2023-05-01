@@ -15,9 +15,9 @@ const (
 
 // bootloader config
 const (
-	ConfigDisableLog  = "BOOTLOADER-DISABLE_PRINT"
-	ConfigDisableSort = "BOOTLOADER-DISABLE_SORT"
-	ConfigMode        = "BOOTLOADER-MODE"
-	ConfigProjectName = "BOOTLOADER-PROJECT_NAME"
-	ConfigProjectRoot = "BOOTLOADER-PROJECT_ROOT"
+	ConfigDisablePrint = "BOOTLOADER-DISABLE_PRINT"
+	ConfigDisableSort  = "BOOTLOADER-DISABLE_SORT"
+	ConfigMode         = "BOOTLOADER-MODE"
+	ConfigProjectName  = "BOOTLOADER-PROJECT_NAME"
+	ConfigProjectRoot  = "BOOTLOADER-PROJECT_ROOT"
 )

@@ -46,9 +46,9 @@ func (ctx *LoaderContext) IsDisableSort() bool {
 	return os.Getenv(common.ConfigDisableSort) != ""
 }
 
-// IsDisableLog return true if BOOTLOADER-DISABLE_PRINT is set
-func (ctx *LoaderContext) IsDisableLog() bool {
-	return os.Getenv(common.ConfigDisableLog) != ""
+// IsDisablePrint return true if BOOTLOADER-DISABLE_PRINT is set
+func (ctx *LoaderContext) IsDisablePrint() bool {
+	return os.Getenv(common.ConfigDisablePrint) != ""
 }
 
 // GetMode return BOOTLOADER-MODE
