@@ -1,5 +1,61 @@
 # go-bootloader
 
+##  Quick Start
+### go get
+```bash
+go get -u github.com/xiaolongliu98/go-bootloader
+```
+### apply in your project
+
+```go
+package main
+
+import (
+	"context"
+	"github.com/xiaolongliu98/go-bootloader"
+	"github.com/xiaolongliu98/go-bootloader/ctx"
+	"github.com/xiaolongliu98/go-bootloader/model"
+)
+
+type FirstLoader struct {
+}
+
+func (l FirstLoader) Load(ctx ctx.LoaderContext) error {
+    // your project startup code
+	return nil
+}
+
+func (l FirstLoader) Require() []string {
+	return []string{}
+}
+
+type SecondLoader struct {
+}
+
+func (l SecondLoader) Load(ctx ctx.LoaderContext) error {
+	// your project startup code
+	return nil
+}
+
+func (l SecondLoader) Require() []string {
+	return []string{"FirstLoader"}
+}
+
+func main() {
+	list := model.LoaderList{
+		&FirstLoader{},
+		&SecondLoader{},
+	}
+	bootloader.Load(context.TODO(), list)
+	bootloader.WaitShutdownGracefully()
+}
+```
+更多的例子请参考example目录下的代码
+
+For more examples, please refer to the code in the example directory.
+
+
+# Introduction
 ## 一个简单的启动依赖加载器
 ## A simple startup dependency loader.
 

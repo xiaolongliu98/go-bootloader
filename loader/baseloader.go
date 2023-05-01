@@ -2,8 +2,8 @@ package loader
 
 import (
 	"fmt"
-	"go-bootloader/common"
-	"go-bootloader/ctx"
+	"github.com/xiaolongliu98/go-bootloader/common"
+	"github.com/xiaolongliu98/go-bootloader/ctx"
 	"math/rand"
 	"os"
 	"path/filepath"

@@ -1,8 +1,8 @@
 package model
 
 import (
-	"go-bootloader/ctx"
-	"go-bootloader/util"
+	"github.com/xiaolongliu98/go-bootloader/ctx"
+	"github.com/xiaolongliu98/go-bootloader/util"
 )
 
 type Loader interface {

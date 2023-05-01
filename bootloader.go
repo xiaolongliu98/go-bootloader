@@ -3,15 +3,18 @@ package bootloader
 import (
 	"context"
 	"fmt"
-	"go-bootloader/common"
-	"go-bootloader/ctx"
-	"go-bootloader/loader"
-	"go-bootloader/model"
-	"go-bootloader/util"
+	"github.com/xiaolongliu98/go-bootloader/common"
+	"github.com/xiaolongliu98/go-bootloader/ctx"
+	"github.com/xiaolongliu98/go-bootloader/loader"
+	"github.com/xiaolongliu98/go-bootloader/model"
+	"github.com/xiaolongliu98/go-bootloader/util"
 	"log"
+	"os"
+	"os/signal"
 	"sort"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 )
 
@@ -276,4 +279,18 @@ func topoSort(loaderList model.LoaderList) model.LoaderList {
 	}
 
 	return sorted
+}
+
+// WaitShutdownGracefully 等待优雅关闭
+func WaitShutdownGracefully() {
+	// 等待优雅关闭
+	time.Sleep(time.Millisecond * 100)
+	log.Println("------------------------------------------------")
+	log.Println("程序已启动，按 Ctrl + C 停止程序")
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	log.Println("Server exiting")
+	time.Sleep(time.Millisecond * 100)
 }

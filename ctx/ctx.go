@@ -2,7 +2,7 @@ package ctx
 
 import (
 	"context"
-	"go-bootloader/common"
+	"github.com/xiaolongliu98/go-bootloader/common"
 	"os"
 )
 

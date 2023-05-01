@@ -3,10 +3,11 @@ package example
 import (
 	"context"
 	"fmt"
-	bootloader "go-bootloader"
-	"go-bootloader/common"
-	"go-bootloader/ctx"
-	"go-bootloader/model"
+	"github.com/xiaolongliu98/go-bootloader"
+	"github.com/xiaolongliu98/go-bootloader/common"
+	"github.com/xiaolongliu98/go-bootloader/ctx"
+	"github.com/xiaolongliu98/go-bootloader/model"
+
 	"testing"
 )
 
@@ -112,4 +113,6 @@ func TestLoadAll(t *testing.T) {
 	}
 	bootloader.TestMode("go-bootloader")
 	bootloader.Load(context.TODO(), loaderList)
+
+	bootloader.WaitShutdownGracefully()
 }
