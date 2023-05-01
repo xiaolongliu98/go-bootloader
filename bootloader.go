@@ -6,6 +6,7 @@ import (
 	"go-bootloader/common"
 	"go-bootloader/ctx"
 	"go-bootloader/loader"
+	"go-bootloader/model"
 	"go-bootloader/util"
 	"log"
 	"sort"
@@ -15,12 +16,13 @@ import (
 )
 
 var (
-	once      sync.Once
+	once1     sync.Once
+	once2     sync.Once
 	loaderCtx ctx.LoaderContext
 )
 
 func init() {
-	once.Do(func() {
+	once1.Do(func() {
 		DevMode()
 		loaderCtx = ctx.LoaderContext{}
 	})
@@ -51,18 +53,35 @@ func TestMode(projectName string) {
 }
 
 // Load 启动加载
-func Load(ctx context.Context, list common.LoaderList) {
+func Load(ctx context.Context, list model.LoaderList) {
+	loaderCtx.SetContext(ctx)
 	// check list contains BaseLoader
 	if !list.Contains("BaseLoader") {
 		// insert first
-		list = append(common.LoaderList{&loader.BaseLoader{}}, list...)
+		list = append(model.LoaderList{&loader.BaseLoader{}}, list...)
 	}
 
-	once.Do(func() {
+	once2.Do(func() {
 		t := time.Now()
-
 		if !loaderCtx.IsDisableSort() {
-			list = topoSort(list)
+			sortedList := topoSort(list)
+			// 检查 loaderList 和 结果长度是否一样，否则warning
+			if len(list) != len(sortedList) {
+				// 找出缺失的loader
+				loaderMap := map[string]struct{}{}
+				for _, loader := range list {
+					loaderMap[util.GetTypeName(loader)] = struct{}{}
+				}
+				for _, loader := range sortedList {
+					delete(loaderMap, util.GetTypeName(loader))
+				}
+				// 打印warning
+				for loaderName, _ := range loaderMap {
+					log.Printf("Warning: Loader[%v]没有被加载\n", loaderName)
+				}
+				panic("上述Loader可能存在错误的依赖关系，请检查")
+			}
+			list = sortedList
 		}
 
 		if !loaderCtx.IsDisableLog() {
@@ -105,9 +124,9 @@ func Load(ctx context.Context, list common.LoaderList) {
 }
 
 // GetMinLoaderList 获取目标最小的loader列表
-func GetMinLoaderList(target common.Loader, all common.LoaderList) common.LoaderList {
-	list := NewLoaderListWithBaseLoader()
-	q := common.LoaderList{target}
+func GetMinLoaderList(target model.Loader, all model.LoaderList) model.LoaderList {
+	list := NewLoaderList()
+	q := model.LoaderList{target}
 	// requires is a DAG, so we can use BFS to get the minimal target list
 	for len(q) != 0 {
 		size := len(q)
@@ -129,19 +148,21 @@ func GetMinLoaderList(target common.Loader, all common.LoaderList) common.Loader
 	return list
 }
 
-// NewLoaderListWithBaseLoader 生成一个包含BaseLoader的LoaderList
-func NewLoaderListWithBaseLoader() common.LoaderList {
-	return common.LoaderList{
-		&loader.BaseLoader{},
+// NewLoaderList 生成一个LoaderList
+func NewLoaderList(loaders ...model.Loader) model.LoaderList {
+	list := model.LoaderList{}
+	for _, loader := range loaders {
+		list = append(list, loader)
 	}
+	return list
 }
 
 // topoSort 根据require拓扑排序
-func topoSort(loaderList common.LoaderList) common.LoaderList {
-	name2Loader := map[string]common.Loader{}
+func topoSort(loaderList model.LoaderList) model.LoaderList {
+	name2Loader := map[string]model.Loader{}
 	Q := make([]string, 0, len(loaderList))
-	var finalLoader common.Loader
-	var firstLoader common.Loader
+	var finalLoader model.Loader
+	var firstLoader model.Loader
 
 	// 建立依赖图结构
 	// loader的入边（表示被依赖的）
@@ -239,7 +260,7 @@ func topoSort(loaderList common.LoaderList) common.LoaderList {
 		result = append(result, subResult...)
 	}
 
-	sorted := make(common.LoaderList, 0, len(result)+1)
+	sorted := make(model.LoaderList, 0, len(result)+1)
 
 	for _, loaderName := range result {
 		loader := name2Loader[loaderName]
@@ -247,7 +268,7 @@ func topoSort(loaderList common.LoaderList) common.LoaderList {
 	}
 	// 加入firstLoader
 	if firstLoader != nil {
-		sorted = append([]common.Loader{firstLoader}, sorted...)
+		sorted = append([]model.Loader{firstLoader}, sorted...)
 	}
 	// 加入finalLoader
 	if finalLoader != nil {
