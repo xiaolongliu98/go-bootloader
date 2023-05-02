@@ -75,3 +75,27 @@ func (ctx *LoaderContext) IsProdMode() bool {
 func (ctx *LoaderContext) IsDevMode() bool {
 	return ctx.GetMode() == common.ModeDev
 }
+
+// SetTestMode set mode to test
+func (ctx *LoaderContext) SetTestMode() {
+	ctx.Set(common.ConfigMode, common.ModeTest)
+}
+
+// SetProdMode set mode to prod
+func (ctx *LoaderContext) SetProdMode() {
+	ctx.Set(common.ConfigMode, common.ModeProd)
+}
+
+// SetDevMode set mode to dev, default
+func (ctx *LoaderContext) SetDevMode() {
+	ctx.Set(common.ConfigMode, common.ModeDev)
+}
+
+// SetMode set mode by string, check mode in [common.ModeProd, common.ModeDev, common.ModeTest]
+func (ctx *LoaderContext) SetMode(mode string) {
+	// check mode in [prod, dev, test]
+	if mode != common.ModeProd && mode != common.ModeDev && mode != common.ModeTest {
+		panic("mode must be in [prod, dev, test]")
+	}
+	ctx.Set(common.ConfigMode, mode)
+}

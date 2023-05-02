@@ -2,9 +2,9 @@ package common
 
 // load mode
 const (
-	ModeTest = "0"
-	ModeProd = "1"
-	ModeDev  = "2" // default
+	ModeTest = "test"
+	ModeProd = "prod"
+	ModeDev  = "dev" // default
 )
 
 // sort tag
