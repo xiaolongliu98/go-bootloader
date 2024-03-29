@@ -19,9 +19,10 @@ import (
 )
 
 var (
-	once1     sync.Once
-	once2     sync.Once
-	loaderCtx ctx.LoaderContext
+	once1      sync.Once
+	once2      sync.Once
+	loaderCtx  ctx.LoaderContext
+	loadedList model.LoaderList
 )
 
 func init() {
@@ -123,6 +124,8 @@ func Load(ctx context.Context, list model.LoaderList) {
 				len(list),
 				time.Since(t).Milliseconds())
 		}
+
+		loadedList = list
 	})
 }
 
@@ -290,7 +293,17 @@ func WaitShutdownGracefully() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
-
+	doBeforeExit(loaderCtx)
 	log.Println("Server exiting")
 	time.Sleep(time.Millisecond * 100)
+}
+
+func doBeforeExit(ctx ctx.LoaderContext) {
+	for i := len(loadedList) - 1; i >= 0; i-- {
+		l, ok := loadedList[i].(model.ExitLoader)
+		if ok {
+			continue
+		}
+		l.BeforeExit(ctx)
+	}
 }
